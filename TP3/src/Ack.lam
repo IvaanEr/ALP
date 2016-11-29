@@ -1,0 +1,3 @@
+-- Funcion de Ackerman
+
+def ack = \m:N. R (\n:N. suc n) (\r:N->N.\x:N.\n:N. R (r (suc Z)) (\e:N.\y:N. r e ) n) m

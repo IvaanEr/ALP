@@ -1,0 +1,12 @@
+def I = \x:B. x
+def K = \x:B.\y:B.x
+def S = \x:B->B->B.\y:B->B.\z:B.(x z) (y z)
+def P = (let z = ((\x:B.x) as B->B) in z) as B -> B
+def Pi = (let z = (\x:B.x) in z)
+def U = (\x:Unit->Unit->Unit.\y:Unit->Unit.\z:Unit.(x z) (y z)) as (Unit -> Unit -> Unit) -> (Unit -> Unit) -> Unit -> Unit
+def X = (unit as Unit, \x:(B,(B,B)). snd (snd x))
+
+def pred = (\n:N. R Z (\r:N.\y:N. y) n)
+def sum = (\m:N. R (\y:N.y) (\r:N->N.\n:N.\y:N. suc (r y)) m)
+def res = \n:N.\m:N. R n (\r:N.\y:N. pred r) m 
+def mul = \n:N.\m:N. R Z (\r:N.\y:N. sum r n) m

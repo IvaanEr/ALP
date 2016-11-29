@@ -1,0 +1,3 @@
+def sqrt = \n. sqrt' n zero
+
+def sqrt' = Y (\f n m. (is0 (res n (mult m m) )) m (f n (suc m)))
