@@ -27,7 +27,7 @@ data Contact = Contact {  name  :: Name
                        } deriving Show 
 
 
-data Reminder =   Remind DateTime String
+data Reminder = Remind DateTime String
                 | Meeting DateTime String 
                 deriving Show
 
@@ -40,9 +40,12 @@ type Contacts = [Contact]
 type Reminders = [Reminder]
 type Groceries = [String]
 
-data Schedule = Sched Owner
-                      Contacts
-                      Reminders
-                      Debts
-                      Groceries deriving Show
-                      
+data Schedule = Sched {  owner :: Owner
+                      ,  contacts :: Contacts
+                      ,  reminders :: Reminders
+                      ,  debts :: Debts
+                      ,  groceries :: Groceries 
+                      } deriving Show
+
+data Error =   Repeat
+             | Unexist deriving Show
