@@ -3,7 +3,7 @@ module Parser where
 import Text.ParserCombinators.Parsec
 import Text.Parsec.Token as P
 import Text.Parsec.Language (emptyDef)
-import AST
+import Types
 
 -----------------------
 -- Funcion para facilitar el testing del parser.
@@ -19,7 +19,7 @@ lis :: TokenParser u
 lis = makeTokenParser (emptyDef   { commentStart  = "/*"
                                   , commentEnd    = "*/"
                                   , commentLine   = "//"
-                                  , reservedNames = ["Contact","ph:", "n:", "addr:","@"]
+                                  , reservedNames = ["Contact","ph:", "n:", "addr:"]
                                   })
 -- runP = parse  
 

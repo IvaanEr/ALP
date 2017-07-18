@@ -17,7 +17,7 @@ module Main where
   import Text.PrettyPrint.HughesPJ (render)
   import Text.ParserCombinators.Parsec (many,Parser,parse)
 
-  import AST
+  import Types
   import Parser
   import PrettyPrinter
 
@@ -27,7 +27,7 @@ module Main where
 
   main :: IO ()
   main = do args <- getArgs 
-            readevalprint args (S True "" [])
+            readevalprint args (State "")
 
   ioExceptionCatcher :: IOException -> IO (Maybe a)
   ioExceptionCatcher _ = return Nothing
@@ -36,45 +36,40 @@ module Main where
   iprompt = "Sched> "
 
 
-  data State = S { inter :: Bool,       -- True, si estamos en modo interactivo.
-                   lfile :: String     -- Ultimo archivo cargado (para hacer "reload")
-                 --  ve :: [(Name,Value)]  -- Entorno con variables globales y su valor
-                 }
+  -- data State = S { inter :: Bool,       -- True, si estamos en modo interactivo.
+  --                  lfile :: String     -- Ultimo archivo cargado (para hacer "reload")
+  --                  ve :: [(Name,Value)]  -- Entorno con variables globales y su valor
+  --                }
 
 -- read-eval-print loop
-readevalprint st =
-  let rec st = do mx <- readline iprompt
-                  case mx of
-                    Just "" -> rec st
-                    Just xs -> do addHistory xs
-                                  comm <- parseCommand xs
---   --  read-eval-print loop
---   readevalprint :: [String] -> State -> IO ()
---   readevalprint args state@(S {..}) =
---     let rec state =
---           do
---             mx <- catch
---                    (if inter
---                     then readline iprompt 
---                     else fmap Just getLine)
---                     ioExceptionCatcher
---             case mx of
---               Nothing   ->  return ()
---               Just ""   ->  rec state
---               Just x    ->
---                 do
---                   when inter (addHistory x)
---                   c  <- interpretCommand x
---                   state' <- handleCommand state c
---                   maybe (return ()) rec state'
---     in
---       do
--- --        state' <- compileFile (state {lfile=prelude, inter=False}) prelude
---         state' <- compileFiles (prelude:args) state 
---         when inter $ putStrLn (iname ++ ".\n" ++
---                                "Escriba :? para recibir ayuda.")
---         --  enter loop
---         rec state' {inter=True}
+-- readevalprint st =
+--   let rec st = do mx <- readline iprompt
+--                   case mx of
+--                     Just "" -> rec st
+--                     Just xs -> do addHistory xs
+--                                   comm <- parseCommand xs
+--                                   st' <- doCommand st comm
+--                                   readevalprint st'
+  --  read-eval-print loop
+  readevalprint :: [String] -> State -> IO ()
+  readevalprint args state@(State {..}) =
+    let rec state =
+          do line <- readline iprompt
+             case line of
+              Nothing   ->  return ()
+              Just ""   ->  rec state
+              Just x    ->
+                do addHistory x
+                   c  <- interpretCommand x
+                   state' <- handleCommand state c
+                   maybe (return ()) rec state'
+    in
+      do
+--        state' <- compileFile (state {lfile=prelude, inter=False}) prelude
+        state' <- compileFiles args state 
+        putStrLn (iname ++ ".\n" ++ "Escriba :? para recibir ayuda.")
+        --  enter loop
+        rec state'
 
   data Command = Compile CompileForm
                | Print String
@@ -86,7 +81,7 @@ readevalprint st =
 
   data CompileForm = CompileInteractive  String
                    | CompileFile         String
-  
+
   interpretCommand :: String -> IO Command
   interpretCommand x
     =  if isPrefixOf ":" x then

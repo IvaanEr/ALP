@@ -31,7 +31,8 @@ data Reminder = Remind DateTime String
                 | Meeting DateTime String 
                 deriving Show
 
-data Debt = Debt Name Integer deriving Show
+-- I debt Integer to Name because of String
+data Debt = Debt Name Integer String deriving Show
 
 
 
@@ -49,3 +50,9 @@ data Schedule = Sched {  owner :: Owner
 
 data Error =   Repeat
              | Unexist deriving Show
+
+data LoadSched = Null | Schedule deriving Show
+
+data State = State { file :: String -- Last schedule loaded 
+                   , load_sched :: LoadSched
+                   } deriving Show

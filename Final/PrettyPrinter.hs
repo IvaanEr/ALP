@@ -1,7 +1,7 @@
 
 module PrettyPrinter where
 
-import AST
+import Types
   
 import Text.PrettyPrint.HughesPJ
 import Data
