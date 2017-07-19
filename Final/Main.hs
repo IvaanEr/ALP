@@ -62,10 +62,10 @@ module Main where
                 do addHistory x
                    c  <- interpretCommand x
                    state' <- handleCommand state c
-                   maybe (return ()) rec state'
+                   maybe (return ()) rec state'       -- wtf is this shit?
     in
       do
---        state' <- compileFile (state {lfile=prelude, inter=False}) prelude
+--      state' <- compileFile (state {lfile=prelude, inter=False}) prelude
         state' <- compileFiles args state 
         putStrLn (iname ++ ".\n" ++ "Escriba :? para recibir ayuda.")
         --  enter loop
@@ -144,11 +144,11 @@ module Main where
 
   compileFiles :: [String] -> State -> IO State
   compileFiles [] s      = return s
-  compileFiles (x:xs) s  = do s' <- compileFile (s {lfile=x, inter=False})  x
+  compileFiles (x:xs) s  = do s' <- compileFile (s {file=x})  x
                               compileFiles xs s'
 
   compileFile :: State -> String -> IO State
-  compileFile state@(S {..}) f =
+  compileFile state@(State {..}) f =
     do
       putStrLn ("Abriendo "++f++"...")
       let f'= reverse(dropWhile isSpace (reverse f))
