@@ -5,6 +5,7 @@ import Text.Parsec.Token as P
 import Text.Parsec.Char
 import Text.Parsec.Language (emptyDef)
 
+import Data.Char (isSpace)
 import Types
 import Data
 import Data.Dates
@@ -23,14 +24,29 @@ lis :: TokenParser u
 lis = makeTokenParser (emptyDef   { commentStart  = "/*"
                                   , commentEnd    = "*/"
                                   , commentLine   = "//"
-                                  , reservedNames = ["contact","ph", "n", "addr","R","M","D","G"]
-                                  , reservedOpNames = [":","[","]","-","$"]
+                                  , reservedNames = ["date","contact","ph", "n", "addr","R","M","D","G"]
+                                  , reservedOpNames = [":","[","]","-",",","$"]
                                   })
 
 line :: Parser String
 line = many $ noneOf "\n"
 
-enter = reservedOp lis "\n"
+
+removeSpaces :: String -> String
+removeSpaces [] = []
+removeSpaces (x:xs) = if isSpace x then removeSpaces xs else (x:xs)
+
+-- Probably there is a better way to do this...
+str :: Parser String
+str = do sp <- many space
+         x <- alphaNum
+         sp2 <- many space
+         xs <- many str
+         let string = (sp)++[x]++(sp2)++(concat xs)
+             string2 = reverse $ removeSpaces $ reverse string
+         return string2
+
+listP p = brackets lis (sepBy p (comma lis))
 
 dateP :: Parser DateTime
 dateP = do reserved lis "date"
@@ -45,80 +61,79 @@ dateP = do reserved lis "date"
            return (DateTime (fromInteger year) (fromInteger month) 
                    (fromInteger day) (fromInteger hour) (fromInteger minute) 0)
 
-nameParse :: Parser Name
-nameParse = do reserved lis "n"
-               reservedOp lis ":"
-               x <- identifier lis
-               return x
+nameP :: Parser Name
+nameP = do reserved lis "n"
+           reservedOp lis ":"
+           x <- identifier lis
+           return x
 
-addrParse :: Parser Address
-addrParse = do reserved lis "addr"
-               reservedOp lis ":"
-               street <- identifier lis
-               num    <- natural lis
-               return (Addr street num)
+addrP :: Parser Address
+addrP = do reserved lis "addr"
+           reservedOp lis ":"
+           street <- identifier lis
+           num    <- natural lis
+           return (Addr street num)
 
-phoneParse :: Parser PhoneNum
-phoneParse = do  reserved lis "ph"
-                 reservedOp lis ":" 
-                 pref <- natural lis
-                 reservedOp lis "-"
-                 num <- natural lis
-                 return (Phone pref num) 
+phoneP :: Parser PhoneNum
+phoneP = do  reserved lis "ph"
+             reservedOp lis ":" 
+             pref <- natural lis
+             reservedOp lis "-"
+             num <- natural lis
+             return (Phone pref num) 
 
 contactP :: Parser Contact
 contactP = do reserved lis "contact"
               reservedOp lis ":"
-              n <- nameParse
-              p <- phoneParse
-              a <- addrParse
+              n <- nameP
+              p <- phoneP
+              a <- addrP
               return (Contact n p a)
 
-parseIO :: String -> Parser a -> String -> IO (Maybe a)
-parseIO f p x = case parse (totParser p) f x of
-                  Left e  -> putStrLn (show e) >> return Nothing
-                  Right r -> return (Just r)
-
-parseFile file = do f <- readFile file
-                    case parse contactListP file f of
-                      Left e  -> putStrLn (show e) >> return Nothing
-                      Right r -> return (Just r)
-
-
 contactListP :: Parser Contacts
-contactListP = do reservedOp lis "["
-                  xs <- sepBy1 contactP (reservedOp lis "$")
-                  reservedOp lis "]"
-                  return xs                  
+contactListP = listP contactP
 
 reminderP :: Parser Reminder
 reminderP = try (do reserved lis "R"
                     d <- dateP
-                    description <- line
+                    description <- str
                     return (Remind d description))
             <|> (do reserved lis "M"
                     d <- dateP
-                    description <- line
+                    description <- str
                     return (Meeting d description))
+
+reminderListP :: Parser Reminders
+reminderListP = do listP reminderP
+
 
 debtP :: Parser Debt
 debtP = do reserved lis "D"
            who <- identifier lis
+           reservedOp lis "$"
            mount <- natural lis
-           why <- line
+           why <- str
            return (Debt who mount why)
+
+debtListP :: Parser Debts
+debtListP = listP debtP
 
 grocerieP :: Parser String
 grocerieP = do reserved lis "G"
-               line
+               str
 
+grocerieListP :: Parser Groceries
+grocerieListP = listP grocerieP
 
 schedP :: Parser Schedule
 schedP = do reserved lis "Sched"
             reservedOp lis ":"
-            many1 $ reservedOp lis "\n"
-
-            return (Sched "yo" [] [] [] [])
+            name <- identifier lis
+            c <- contactListP
+            r <- reminderListP
+            d <- debtListP
+            g <- grocerieListP
+            return (Sched name c r d g)
 
 
 

@@ -139,6 +139,12 @@ getReminds xs = filter isRemind xs
 getMeetings :: Reminders -> Reminders
 getMeetings xs = filter isMeeting xs
 
+getRemindsSched :: Schedule -> Reminders
+getRemindsSched (Sched _ _ xs _ _) = getReminds xs
+
+getMeetingsSched :: Schedule -> Reminders
+getMeetingsSched (Sched _ _ xs _ _) = getMeetings xs
+
 -- =====================================================================================================================
 
 -- Debts operations
@@ -186,6 +192,9 @@ debtsHigher i sched = filter (\(Debt _ x _) -> x >= i) (debts sched)
 isGrocerie :: String -> [String] -> Bool
 isGrocerie _ [] = False
 isGrocerie st (x:xs) = if st == x then True else isGrocerie st xs
+
+newGrocerie :: String -> String 
+newGrocerie = id
 
 addGrocerieSched :: String -> Schedule -> Either Error Schedule
 addGrocerieSched st (Sched own x y z []) = Right $ Sched own x y z [st]

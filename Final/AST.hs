@@ -1,58 +1,46 @@
 module AST where
 
+import Types
 import Data.Dates
 
-type Name = String
--- type Email = String
-type Owner = Name
+data InterpreterComm = Recompile
+                       | Load String
+                       | Browse
+                       | Help
+                       | Quit
+                       | Operations
+                       | Noop deriving Show
 
+data ScheduleComm = NewSched Owner
+                  
+                  | NewContact Name PhoneNum Address
+                  | NewRemind DateTime String -- needs only day-month-year
+                  | NewMeeting DateTime String -- use "date day-manth-year hour-minute" to create a date
+                  | NewDebt Name Integer String
+                  -- | NewGrocerie String         -- no needed
 
-data Address = Addr String Integer deriving Show
+                  | AddContact Contact
+                  | AddRemind Reminder
+                  | AddDebt Debt
+                  | AddGrocerie Grocerie
 
-data PhoneNum = Phone Integer Integer deriving Show
+                  | DelContact Name
+                  | DelRemind Reminder
+                  | DelDebt Debt
+                  | DelGrocerie Grocerie
 
--- data Date = Date { day :: Integer
---                  , month :: Integer
---                  , year :: Integer } deriving Show
+                  --operations on contacts
+                  | UpdAddress Name Address
+                  | UpdPhone Name PhoneNum 
 
--- data Hour = Houw { tHour :: Integer
---                  , tMinute :: Integer
---                  , tSecond :: Integer} deriving Show
+                  -- operations on reminders
+                  | Interval Integer
+                  | ThisWeek
+                  | ThisMonth
+                  | AllMeetings
+                  | AllReminds
+                      --could add to filter meetings and reminders when u ask week and month
 
--- data Email = Email String String deriving Show
-
-data Contact = Contact {  name  :: Name
-                       ,  phone :: PhoneNum
-                       ,  addr  :: Address
-                       } deriving Show 
-
-
-data Reminder = Remind DateTime String
-                | Meeting DateTime String 
-                deriving Show
-
--- I debt Integer to Name because of String
-data Debt = Debt Name Integer String deriving Show
-
-
-
-type Debts = [Debt]
-type Contacts = [Contact]
-type Reminders = [Reminder]
-type Groceries = [String]
-
-data Schedule = Sched {  owner :: Owner
-                      ,  contacts :: Contacts
-                      ,  reminders :: Reminders
-                      ,  debts :: Debts
-                      ,  groceries :: Groceries 
-                      } deriving Show
-
-data Error =   Repeat
-             | Unexist deriving Show
-
-data LoadSched = Null | Schedule deriving Show
-
-data State = State { file :: String -- Last schedule loaded 
-                   , load_sched :: LoadSched
-                   } deriving Show
+                  --operations on debts
+                  | DebtsTo Name
+                  | DebtsHigher Integer deriving Show

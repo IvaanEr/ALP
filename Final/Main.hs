@@ -20,14 +20,19 @@ module Main where
   import Types
   import Parser
   import PrettyPrinter
-
+  import Commands
 ---------------------
 --- Interpreter
 ---------------------
 
+-- Assume that only can get one argument, that is the name of a file to load
+
   main :: IO ()
-  main = do args <- getArgs 
-            readevalprint args (State "")
+  main = do arg <- getArgs
+            case length arg of 
+              0 -> readevalprint "" (State {file="",actualSched = Null})
+              1 -> readevalprint (head arg) (State {file="",actualSched = Null})
+              _ -> putStrLn "Error: too many arguments"
 
   ioExceptionCatcher :: IOException -> IO (Maybe a)
   ioExceptionCatcher _ = return Nothing
@@ -51,7 +56,7 @@ module Main where
 --                                   st' <- doCommand st comm
 --                                   readevalprint st'
   --  read-eval-print loop
-  readevalprint :: [String] -> State -> IO ()
+  readevalprint :: String -> State -> IO ()
   readevalprint args state@(State {..}) =
     let rec state =
           do line <- readline iprompt
@@ -66,152 +71,152 @@ module Main where
     in
       do
 --      state' <- compileFile (state {lfile=prelude, inter=False}) prelude
-        state' <- compileFiles args state 
-        putStrLn (iname ++ ".\n" ++ "Escriba :? para recibir ayuda.")
+        state' <- compileFile state args
+        putStrLn (iname ++ ".\n" ++ "Write :? two print help.")
         --  enter loop
         rec state'
 
-  data Command = Compile CompileForm
-               | Print String
-               | Recompile  
-               | Browse
-               | Quit
-               | Help
-               | Noop
+  -- data Command = Compile CompileForm
+  --              | Print String
+  --              | Recompile  
+  --              | Browse
+  --              | Quit
+  --              | Help
+  --              | Noop
 
-  data CompileForm = CompileInteractive  String
-                   | CompileFile         String
+  -- data CompileForm = CompileInteractive  String
+  --                  | CompileFile         String
 
-  interpretCommand :: String -> IO Command
-  interpretCommand x
-    =  if isPrefixOf ":" x then
-         do  let  (cmd,t')  =  break isSpace x
-                  t         =  dropWhile isSpace t'
-             --  find matching commands
-             let  matching  =  filter (\ (Cmd cs _ _ _) -> any (isPrefixOf cmd) cs) commands
-             case matching of
-               []  ->  do  putStrLn ("Comando desconocido `" ++ cmd ++ "'. Escriba :? para recibir ayuda.")
-                           return Noop
-               [Cmd _ _ f _]
-                   ->  do  return (f t)
-               _   ->  do  putStrLn ("Comando ambigüo, podría ser " ++ 
-                                     concat (intersperse ", " [ head cs | Cmd cs _ _ _ <- matching ]) ++ ".")
-                           return Noop
+  -- interpretCommand :: String -> IO Command
+  -- interpretCommand x
+  --   =  if isPrefixOf ":" x then
+  --        do  let  (cmd,t')  =  break isSpace x
+  --                 t         =  dropWhile isSpace t'
+  --            --  find matching commands
+  --            let  matching  =  filter (\ (Cmd cs _ _ _) -> any (isPrefixOf cmd) cs) commands
+  --            case matching of
+  --              []  ->  do  putStrLn ("Comando desconocido `" ++ cmd ++ "'. Escriba :? para recibir ayuda.")
+  --                          return Noop
+  --              [Cmd _ _ f _]
+  --                  ->  do  return (f t)
+  --              _   ->  do  putStrLn ("Comando ambigüo, podría ser " ++ 
+  --                                    concat (intersperse ", " [ head cs | Cmd cs _ _ _ <- matching ]) ++ ".")
+  --                          return Noop
                                                         
-       else
-         return (Compile (CompileInteractive x))
+  --      else
+  --        return (Compile (CompileInteractive x))
 
-  handleCommand :: State -> Command -> IO (Maybe State)
-  handleCommand state@(S {..}) cmd
-    =  case cmd of
-         Quit   ->  when (not inter) (putStrLn "!@#$^&*") >> return Nothing
-         Noop   ->  return (Just state)
-         Help   ->  putStr (helpTxt commands) >> return (Just state)
-         Browse ->  do  putStr (unlines [ s | Global s <- reverse (nub (map fst ve)) ])
-                        return (Just state)
-         Compile c ->
-                    do  state' <- case c of
-                                   CompileInteractive s -> compilePhrase state s
-                                   CompileFile f        -> compileFile (state {lfile=f}) f
-                        return (Just state')
-         Print s   -> printPhrase s >> return (Just state)
-         Recompile -> if null lfile 
-                        then putStrLn "No hay un archivo cargado.\n" 
-                             >> return (Just state) 
-                        else handleCommand state (Compile (CompileFile lfile))
+  -- handleCommand :: State -> Command -> IO (Maybe State)
+  -- handleCommand state@(S {..}) cmd
+  --   =  case cmd of
+  --        Quit   ->  when (not inter) (putStrLn "!@#$^&*") >> return Nothing
+  --        Noop   ->  return (Just state)
+  --        Help   ->  putStr (helpTxt commands) >> return (Just state)
+  --        Browse ->  do  putStr (unlines [ s | Global s <- reverse (nub (map fst ve)) ])
+  --                       return (Just state)
+  --        Compile c ->
+  --                   do  state' <- case c of
+  --                                  CompileInteractive s -> compilePhrase state s
+  --                                  CompileFile f        -> compileFile (state {lfile=f}) f
+  --                       return (Just state')
+  --        Print s   -> printPhrase s >> return (Just state)
+  --        Recompile -> if null lfile 
+  --                       then putStrLn "No hay un archivo cargado.\n" 
+  --                            >> return (Just state) 
+  --                       else handleCommand state (Compile (CompileFile lfile))
 
-  data InteractiveCommand = Cmd [String] String (String -> Command) String
+  -- data InteractiveCommand = Cmd [String] String (String -> Command) String
 
-  commands :: [InteractiveCommand]
-  commands
-    =  [ Cmd [":browse"]      ""        (const Browse) "Ver los nombres en scope",
-         Cmd [":load"]        "<file>"  (Compile . CompileFile)
-                                                       "Cargar un programa desde un archivo",
-         Cmd [":print"]       "<exp>"   Print          "Imprime un término y sus ASTs",
-         Cmd [":reload"]      "<file>"  (const Recompile) "Volver a cargar el último archivo",
-         Cmd [":quit"]        ""        (const Quit)   "Salir del intérprete",
-         Cmd [":help",":?"]   ""        (const Help)   "Mostrar esta lista de comandos" ]
+  -- commands :: [InteractiveCommand]
+  -- commands
+  --   =  [ Cmd [":browse"]      ""        (const Browse) "Ver los nombres en scope",
+  --        Cmd [":load"]        "<file>"  (Compile . CompileFile)
+  --                                                      "Cargar un programa desde un archivo",
+  --        Cmd [":print"]       "<exp>"   Print          "Imprime un término y sus ASTs",
+  --        Cmd [":reload"]      "<file>"  (const Recompile) "Volver a cargar el último archivo",
+  --        Cmd [":quit"]        ""        (const Quit)   "Salir del intérprete",
+  --        Cmd [":help",":?"]   ""        (const Help)   "Mostrar esta lista de comandos" ]
   
-  helpTxt :: [InteractiveCommand] -> String
-  helpTxt cs
-    =  "Lista de comandos:  Cualquier comando puede ser abreviado a :c donde\n" ++
-       "c es el primer caracter del nombre completo.\n\n" ++
-       "<expr>                  evaluar la expresión\n" ++
-       "def <var> = <expr>      definir una variable\n" ++
-       unlines (map (\ (Cmd c a _ d) -> 
-                     let  ct = concat (intersperse ", " (map (++ if null a then "" else " " ++ a) c))
-                     in   ct ++ replicate ((24 - length ct) `max` 2) ' ' ++ d) cs)
+  -- helpTxt :: [InteractiveCommand] -> String
+  -- helpTxt cs
+  --   =  "Lista de comandos:  Cualquier comando puede ser abreviado a :c donde\n" ++
+  --      "c es el primer caracter del nombre completo.\n\n" ++
+  --      "<expr>                  evaluar la expresión\n" ++
+  --      "def <var> = <expr>      definir una variable\n" ++
+  --      unlines (map (\ (Cmd c a _ d) -> 
+  --                    let  ct = concat (intersperse ", " (map (++ if null a then "" else " " ++ a) c))
+  --                    in   ct ++ replicate ((24 - length ct) `max` 2) ' ' ++ d) cs)
 
-  compileFiles :: [String] -> State -> IO State
-  compileFiles [] s      = return s
-  compileFiles (x:xs) s  = do s' <- compileFile (s {file=x})  x
-                              compileFiles xs s'
+  -- compileFiles :: [String] -> State -> IO State
+  -- compileFiles [] s      = return s
+  -- compileFiles (x:xs) s  = do s' <- compileFile (s {file=x})  x
+  --                             compileFiles xs s'
 
-  compileFile :: State -> String -> IO State
-  compileFile state@(State {..}) f =
-    do
-      putStrLn ("Abriendo "++f++"...")
-      let f'= reverse(dropWhile isSpace (reverse f))
-      x <- catch (readFile f')
-                 (\e -> do let err = show (e :: IOException)
-                           hPutStr stderr ("No se pudo abrir el archivo " ++ f' ++ ": " ++ err ++"\n")
-                           return "")
-      stmts <- parseIO f' (many parseTermStmt) x
-      maybe (return state) (foldM handleStmt state) stmts
-
-
-  compilePhrase :: State -> String -> IO State
-  compilePhrase state x =
-    do
-      x' <- parseIO "<interactive>" parseTermStmt x
-      maybe (return state) (handleStmt state) x'
+  -- compileFile :: State -> String -> IO State
+  -- compileFile state@(State {..}) f =
+  --   do
+  --     putStrLn ("Abriendo "++f++"...")
+  --     let f'= reverse(dropWhile isSpace (reverse f))
+  --     x <- catch (readFile f')
+  --                (\e -> do let err = show (e :: IOException)
+  --                          hPutStr stderr ("No se pudo abrir el archivo " ++ f' ++ ": " ++ err ++"\n")
+  --                          return "")
+  --     stmts <- parseIO f' (many parseTermStmt) x
+  --     maybe (return state) (foldM handleStmt state) stmts
 
 
-  printPhrase   :: String -> IO ()
-  printPhrase x =
-    do
-      x' <- parseIO "<interactive>" (parseStmt p) x
-      maybe (return ()) printStmt x'
-     where p :: Parser (LamTerm,Term)
-           p = do a <- parseLamTerm
-                  return (a,conversion a)
+  -- compilePhrase :: State -> String -> IO State
+  -- compilePhrase state x =
+  --   do
+  --     x' <- parseIO "<interactive>" parseTermStmt x
+  --     maybe (return state) (handleStmt state) x'
 
-  printStmt ::  Stmt (LamTerm,Term) -> IO ()
-  printStmt stmt =  
-    do
-      let outtext = case stmt of
-                       Def x (_,e)  -> "def "++x++" = "++render (printTerm e)
-                       Eval (d,e)   -> "LamTerm AST:\n"++
-                                       show d++
-                                       "\n\nTerm AST:\n"++
-                                       show e++
-                                       "\n\nSe muestra como:\n"++
-                                       render (printTerm e)
-      putStrLn outtext
 
-  parseIO :: String -> Parser a -> String -> IO (Maybe a)
-  parseIO f p x = case parse (totParser p) f x of
-                    Left e  -> putStrLn (show e) >> return Nothing
-                    Right r -> return (Just r)
+  -- printPhrase   :: String -> IO ()
+  -- printPhrase x =
+  --   do
+  --     x' <- parseIO "<interactive>" (parseStmt p) x
+  --     maybe (return ()) printStmt x'
+  --    where p :: Parser (LamTerm,Term)
+  --          p = do a <- parseLamTerm
+  --                 return (a,conversion a)
 
-  handleStmt ::  State -> Stmt Term -> IO State
-  handleStmt state stmt =
-    do
-      case stmt of
-          Def x e    -> checkEval x e
-          Eval e     -> checkEval it e
-    where
-      checkEval i t = do
-         let v = eval (ve state) t
-         _ <- when (inter state) $ do
-                  let outtext = if i == it then render (printTerm (quote v))
-                                           else i
-                  putStrLn outtext
-         return (state { ve = (Global i, v) : ve state})
+  -- printStmt ::  Stmt (LamTerm,Term) -> IO ()
+  -- printStmt stmt =  
+  --   do
+  --     let outtext = case stmt of
+  --                      Def x (_,e)  -> "def "++x++" = "++render (printTerm e)
+  --                      Eval (d,e)   -> "LamTerm AST:\n"++
+  --                                      show d++
+  --                                      "\n\nTerm AST:\n"++
+  --                                      show e++
+  --                                      "\n\nSe muestra como:\n"++
+  --                                      render (printTerm e)
+  --     putStrLn outtext
+ 
+ -- parseIO :: String -> Parser a -> String -> IO (Maybe a)
+ --  parseIO f p x = case parse (totParser p) f x of
+ --                    Left e  -> putStrLn (show e) >> return Nothing
+ --                    Right r -> return (Just r)
+
+ --  handleStmt ::  State -> Stmt Term -> IO State
+ --  handleStmt state stmt =
+ --    do
+ --      case stmt of
+ --          Def x e    -> checkEval x e
+ --          Eval e     -> checkEval it e
+ --    where
+ --      checkEval i t = do
+ --         let v = eval (ve state) t
+ --         _ <- when (inter state) $ do
+ --                  let outtext = if i == it then render (printTerm (quote v))
+ --                                           else i
+ --                  putStrLn outtext
+ --         return (state { ve = (Global i, v) : ve state})
 
   -- prelude = "Prelude.lam"
 
-  it :: String          
-  it = "it"
+  -- it :: String          
+  -- it = "it"
  
  
