@@ -10,6 +10,9 @@ import Types
 import Data
 import Data.Dates
 
+--JUST FOR TESTING
+import PrettyPrinter
+
 -----------------------
 -- Funcion para facilitar el testing del parser.
 totParser :: Parser a -> Parser a
@@ -49,7 +52,7 @@ str = do sp <- many space
 listP p = brackets lis (sepBy p (comma lis))
 
 dateP :: Parser DateTime
-dateP = do reserved lis "date"
+dateP = do 
            day    <- natural lis
            (try (reservedOp lis "/") <|> (reservedOp lis "-"))
            month  <-  natural lis

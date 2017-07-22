@@ -15,7 +15,7 @@ data ScheduleComm = NewSched Owner
                   
                   | NewContact Name PhoneNum Address
                   | NewRemind DateTime String -- needs only day-month-year
-                  | NewMeeting DateTime String -- use "date day-manth-year hour-minute" to create a date
+                  | NewMeeting DateTime String -- use "day-manth-year hour:minute" to create a date
                   | NewDebt Name Integer String
                   -- | NewGrocerie String         -- no needed
 

@@ -61,8 +61,8 @@ updateSchedAddr n newAddr (Sched own contacts x y z ) = case isContact n contact
 -- =================================================================================================================
 
 -- Create a Remind
-newRemind :: Int -> Int -> Int -> String -> Reminder
-newRemind day month year st = Remind (DateTime year month day 0 0 0) st
+newRemind :: DateTime -> String -> Reminder
+newRemind date st = Remind date st
 
 newMeeting :: DateTime -> String -> Reminder
 newMeeting date st = Meeting date st 

@@ -2,49 +2,50 @@
 
 module Main where
 
-  import System.Console.Readline
-  import System.IO
-  import System.Environment
-  import Control.Exception (catch,IOException)
+import System.Console.Readline
+import System.IO
+import System.Environment
+import Control.Exception (catch,IOException)
 
-  import Control.Monad.Except
+import Control.Monad.Except
 -- En versiones viejas de GHC reemplazar este import por 
 --  import Control.Monad.Error
 
 
-  import Data.List
-  import Data.Char
-  import Text.PrettyPrint.HughesPJ (render)
-  import Text.ParserCombinators.Parsec (many,Parser,parse)
+import Data.List
+import Data.Char
+import Text.PrettyPrint.HughesPJ (render)
+import Text.ParserCombinators.Parsec (many,Parser,parse)
 
-  import Types
-  import Parser
-  import PrettyPrinter
-  import Commands
+import Types
+import Parser
+import ParserComm
+import PrettyPrinter
+import Commands
 ---------------------
 --- Interpreter
 ---------------------
 
 -- Assume that only can get one argument, that is the name of a file to load
 
-  main :: IO ()
-  main = do arg <- getArgs
-            case length arg of 
-              0 -> readevalprint "" (State {file="",actualSched = Null})
-              1 -> readevalprint (head arg) (State {file="",actualSched = Null})
-              _ -> putStrLn "Error: too many arguments"
+main :: IO ()
+main = do arg <- getArgs
+          case length arg of 
+            0 -> readevalprint "" (State {file="",loadSched = Null})
+            1 -> readevalprint (head arg) (State {file="",loadSched = Null})
+            _ -> putStrLn "Error: too many arguments"
 
-  ioExceptionCatcher :: IOException -> IO (Maybe a)
-  ioExceptionCatcher _ = return Nothing
+ioExceptionCatcher :: IOException -> IO (Maybe a)
+ioExceptionCatcher _ = return Nothing
 
-  iname = "Scheduling interface"
-  iprompt = "Sched> "
+iname = "Scheduling interface"
+iprompt = "Sched> "
 
 
-  -- data State = S { inter :: Bool,       -- True, si estamos en modo interactivo.
-  --                  lfile :: String     -- Ultimo archivo cargado (para hacer "reload")
-  --                  ve :: [(Name,Value)]  -- Entorno con variables globales y su valor
-  --                }
+-- data State = S { inter :: Bool,       -- True, si estamos en modo interactivo.
+--                  lfile :: String     -- Ultimo archivo cargado (para hacer "reload")
+--                  ve :: [(Name,Value)]  -- Entorno con variables globales y su valor
+--                }
 
 -- read-eval-print loop
 -- readevalprint st =
@@ -55,28 +56,36 @@ module Main where
 --                                   comm <- parseCommand xs
 --                                   st' <- doCommand st comm
 --                                   readevalprint st'
-  --  read-eval-print loop
-  readevalprint :: String -> State -> IO ()
-  readevalprint args state@(State {..}) =
-    let rec state =
-          do line <- readline iprompt
-             case line of
-              Nothing   ->  return ()
-              Just ""   ->  rec state
-              Just x    ->
-                do addHistory x
-                   c  <- interpretCommand x
-                   state' <- handleCommand state c
-                   maybe (return ()) rec state'       -- wtf is this shit?
-    in
-      do
---      state' <- compileFile (state {lfile=prelude, inter=False}) prelude
-        state' <- compileFile state args
-        putStrLn (iname ++ ".\n" ++ "Write :? two print help.")
-        --  enter loop
-        rec state'
+--  read-eval-print loop
+readevalprint :: String -> State -> IO ()
+readevalprint args state@(State {..}) =
+  let rec state =
+        do line <- readline iprompt
+           case line of
+            Nothing   ->  return ()
+            Just ""   ->  rec state
+            Just x    ->
+              do addHistory x
+                 c  <- interpretCommand x
+                 state' <- handleCommand state c
+                 maybe (return ()) rec state'
+  in
+    do -- state' <- autoupdate state
+       state' <- compileFile state args
+       putStrLn (iname ++ ".\n" ++ "Write :? two print help.")
+       rec state'
 
-  -- data Command = Compile CompileForm
+
+
+-- autoupdate :: State -> IO State
+-- autoupdate state = do x <- readline "Do you want to auto-update the schedule when something is create? [y/n]\n"
+--                       case x of
+--                         (Just "y") -> return $ state {autoUpdate = True}
+--                         (Just "n") -> return $ state {autoUpdate = False}
+--                         (Just _)   -> do putStrLn "Default: no" >> return state
+--                         Nothing    -> do putStrLn "Default: no" >> return state
+
+         -- data Command = Compile CompileForm
   --              | Print String
   --              | Recompile  
   --              | Browse
