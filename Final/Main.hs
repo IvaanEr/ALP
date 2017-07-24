@@ -60,20 +60,3 @@ readevalprint args state =
        putStrLn (iname ++ ".\n" ++ "Write :? to print help.")
        rec state'
 
-
--- if there isn't a file in arguments then the state is the same.
--- the file is with .sched 
-compileFile :: State -> String -> IO State
-compileFile state@(State {..}) f =
-  if f == ".sched" then return state     
-  else do
-    putStrLn ("Opening "++f)
-    let f'= reverse(dropWhile isSpace (reverse f))
-    x <- catch (readFile f')
-               (\e -> do let err = show (e :: IOException)
-                         hPutStr stderr ("Cannot open the file " ++ f' ++ ": " ++ err ++"\n")
-                         return "")
-    sched <- case parse (totParser schedP) f x of
-              Left e -> putStrLn (show e) >> return Nothing
-              Right s -> return (Just (LS s)) --return (Just (state {loadSched = s}))
-    maybe (return state) (\s -> return (state {file=f,loadSched = s})) sched
