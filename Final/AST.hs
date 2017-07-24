@@ -3,12 +3,15 @@ module AST where
 import Types
 import Data.Dates
 
-data InterpreterComm = Recompile
-                       | Load String
+data InterpreterComm = --Recompile
+                       Load String
                        | Browse
                        | Help
                        | Quit
                        | Operations
+                       | Display
+                       | Save
+                       | Close
                        | Noop deriving Show
 
 data ScheduleComm = NewSched Owner
@@ -32,6 +35,8 @@ data ScheduleComm = NewSched Owner
                   --operations on contacts
                   | UpdAddress Name Address
                   | UpdPhone Name PhoneNum 
+                  | SearchContact Name
+                  | AllContacts
 
                   -- operations on reminders
                   | Interval Integer
@@ -43,4 +48,6 @@ data ScheduleComm = NewSched Owner
 
                   --operations on debts
                   | DebtsTo Name
-                  | DebtsHigher Integer deriving Show
+                  | DebtsHigher Integer 
+                  | AllDebts
+                  | AllGroceries deriving Show

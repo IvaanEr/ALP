@@ -7,11 +7,10 @@ import Text.Parsec.Language (emptyDef)
 
 import Data.Char (isSpace)
 import Types
-import Data
 import Data.Dates
 
 --JUST FOR TESTING
-import PrettyPrinter
+--import PrettyPrinter
 
 -----------------------
 -- Funcion para facilitar el testing del parser.
@@ -65,43 +64,44 @@ dateP = do
                    (fromInteger day) (fromInteger hour) (fromInteger minute) 0)
 
 nameP :: Parser Name
-nameP = do reserved lis "n"
-           reservedOp lis ":"
+nameP = do --reserved lis "n"
+           --reservedOp lis ":"
            x <- identifier lis
            return x
 
 addrP :: Parser Address
-addrP = do reserved lis "addr"
-           reservedOp lis ":"
+addrP = do --reserved lis "addr"
+           --reservedOp lis ":"
            street <- identifier lis
            num    <- natural lis
            return (Addr street num)
 
 phoneP :: Parser PhoneNum
-phoneP = do  reserved lis "ph"
-             reservedOp lis ":" 
+phoneP = do  --reserved lis "ph"
+             --reservedOp lis ":" 
              pref <- natural lis
              reservedOp lis "-"
              num <- natural lis
              return (Phone pref num) 
 
 contactP :: Parser Contact
-contactP = do reserved lis "contact"
-              reservedOp lis ":"
-              n <- nameP
-              p <- phoneP
-              a <- addrP
-              return (Contact n p a)
+contactP = try (do n <- nameP
+                   p <- phoneP
+                   a <- addrP
+                   return (Contact n p a))
+           <|> do n <- nameP
+                  p <- phoneP
+                  return (Contact n p (Addr "NoAddr" 0))
 
 contactListP :: Parser Contacts
 contactListP = listP contactP
 
 reminderP :: Parser Reminder
-reminderP = try (do reserved lis "R"
+reminderP = try (do --reserved lis "R"
                     d <- dateP
                     description <- str
                     return (Remind d description))
-            <|> (do reserved lis "M"
+            <|> (do --reserved lis "M"
                     d <- dateP
                     description <- str
                     return (Meeting d description))
@@ -111,7 +111,7 @@ reminderListP = do listP reminderP
 
 
 debtP :: Parser Debt
-debtP = do reserved lis "D"
+debtP = do --reserved lis "D"
            who <- identifier lis
            reservedOp lis "$"
            mount <- natural lis
@@ -122,8 +122,7 @@ debtListP :: Parser Debts
 debtListP = listP debtP
 
 grocerieP :: Parser String
-grocerieP = do reserved lis "G"
-               str
+grocerieP = do str
 
 grocerieListP :: Parser Groceries
 grocerieListP = listP grocerieP

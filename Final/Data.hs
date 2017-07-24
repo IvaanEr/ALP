@@ -6,7 +6,6 @@ import Data.Dates
 
 -- import System.IO.Unsafe (unsafePerformIO)
 
-
 pedro :: Contact
 pedro = Contact "pedro" (Phone 336 4289111) (Addr "Ayacucho" 1433)
 

@@ -1,8 +1,6 @@
 module Operations where
 
 import Data.Dates
---import Data.Maybe
-
 import System.IO.Unsafe (unsafePerformIO)
 
 import Types
@@ -57,6 +55,12 @@ updateSchedAddr :: Name -> Address -> Schedule -> Either Error Schedule
 updateSchedAddr n newAddr (Sched own contacts x y z ) = case isContact n contacts of
                                             True -> Right (Sched own (updateAddr n newAddr contacts) x y z)
                                             False -> Left Unexist
+
+searchContact :: Name -> Schedule -> Either Error Contact
+searchContact n (Sched own [] _ _ _) = Left Unexist
+searchContact n (Sched own (c:cs) x y z) = if name c == n
+                                              then Right c
+                                              else searchContact n (Sched own cs x y z) 
 
 -- =================================================================================================================
 
