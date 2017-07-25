@@ -1,0 +1,130 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{titlesec}
+\usepackage[scale=0.8]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor,sectsty}
+
+\definecolor{myred}{RGB}{128,0,32}
+\subsectionfont{\color{myred}}
+\sectionfont{\color{myred}}
+
+\author{
+        Ernandorena, Iván\\
+        Legajo: E-1115/1\\
+        \texttt{ivan.ernandorena@gmail.com}
+}
+\date{\today}
+\title {
+    \Huge\textsc{Trabajo Final - Agenda Personal\\}
+    \large\textsc{Análisis de Lenguaje de Programación}
+}
+
+\begin{document}
+  \pagenumbering{gobble}
+  \thispagestyle{empty}
+  \maketitle
+  \begin{center}
+  \includegraphics[scale=0.5]{photo}
+  \end{center}
+
+  \newpage
+  \section*{Introducción}
+    El trabajo final consiste en una agenda personal que además de llevar contactos como una agenda común, se
+    pueden organizar reuniones, recordatorios, deudas y una lista de compras o cosas para hacer.
+    \subsection*{Estructura de la agenda personal}
+    La agenda consiste de:
+    \begin{itemize}
+      \item Un dueño: Este es quien creó la agenda y con este nombre se la guardara y se la cargara respectivamente.
+      \item Contactos: Una lista de contactos de la forma \texttt{nombre-teléfono-dirección}.\\
+      Por ejemplo: Martín 341-1235559 Pellegrini 200. También se pueden tener contactos solo de la forma \texttt{nombre-teléfono}.
+      \item Recordatorios: También es una lista que puede tener \texttt{reuniones} y \texttt{recordatorios}.
+      \item Deudas: Una lista de deudas de la forma \texttt{nombre-cantidad-razón}
+      \item Compras o cosas para hacer: Por último se tiene una lista simple donde podemos escribir cualquier que se desee recordar.
+    \end{itemize}
+
+  \section*{Guia de usuario}
+  \subsection*{Comandos}
+    En una primera instancia tenemos los comandos para abrir, guardar, etc. Estos son los siguientes:
+    \begin{itemize}
+      \item \textbf{:? o :help} Imprime los demás comandos con sus respectivos argumentos.
+      \item \textbf{:browse} Muestra el nombre de la agenda cargada actualmente, si hay alguna.
+      \item \textbf{:load $\langle$nombre$\rangle$} Carga una agenda existente, utilizando el nombre con el que se la creo.
+      \item \textbf{:display} Muestra toda la agenda cargada sin filtros.
+      \item \textbf{:operations} Imprime la ayuda para las operaciones sobre la agenda.
+      \item \textbf{:save} Guarda los cambios realizados.
+      \item \textbf{:close} Cierra la agenda actualmente abierta. También guarda los cambios si se le indica.
+      \item \textbf{:quit} Cierra la interfaz.
+    \end{itemize}
+    Todos los comandos pueden ser abreviados con la primera letra de cada uno. Por ejemplo, \texttt{:s} en lugar de \texttt{:save}.
+
+    \subsection*{Operaciones}
+    Luego, las operaciones sobre la agenda son la siguientes:
+    \subsection*{Operaciones de creacion y agregado}
+    \begin{itemize}
+      \item \textbf{newSched $\langle$nombre$\rangle$} Crea una nueva agenda.
+      
+      \item \textbf{addContact $\langle$nombre$\rangle$ $\langle$teléfono$\rangle$ $\langle$dirección$\rangle$}
+        Añade un nuevo contacto. Se puede añadir un contacto que tenga solo número de teléfono. Además tener en cuenta que el teléfono debe ser de la forma \texttt{caracteristica-número}.
+      
+      \item \textbf{addRemind $\langle$[R][M]$\rangle$ $\langle$día-mes-año$\rangle$ $\langle$hora:min$\rangle$ $\langle$descripción$\rangle$} Añade un nuevo recordatorio. Recordar añadir la R (reminder) o la M (meeting) al comienzo para poder diferenciarlos. Tambíen utilizar bien la notación para las fechas, por ejemplo 26-09-2017 o 26/09/2017; al igual que con la hora, utilizar los dos puntos.
+
+      \item \textbf{addDebt $\langle$nombre$\rangle$ $\langle$\$dinero$\rangle$ $\langle$descripción$\rangle$}
+      Añade una nueva deuda.
+
+      \item \textbf{addGrocerie $\langle$descripción$\rangle$} Añade un nuevo elemento a la lista de compras.
+    \end{itemize}
+    \subsection*{Operaciones de eliminación}
+    \begin{itemize}  
+      \item \textbf{delContact $\langle$nombre$\rangle$} Elimina el contacto dado.
+      \item \textbf{delRemind $\langle$[R][M]$\rangle$ $\langle$día-mes-año$\rangle$ $\langle$hora:min$\rangle$ $\langle$descripción$\rangle$} Elimina el recordatorio dado. Como se puede tener la misma descripción en varias fechas, o la misma fecha para distintas descripción está operación necesita todo el recordatorio.
+
+      \item \textbf{delDebt $\langle$nombre$\rangle$ $\langle$\$dinero$\rangle$ $\langle$descripción$\rangle$} Elimina la deuda dada. También, como puede haber varias deudas de la misma persona se necesita toda la deuda.
+
+      \item \textbf{delGrocerie $\langle$descripción$\rangle$} Elimina el elemento dado.
+    \end{itemize}
+
+    \subsection*{Operaciones de actualización}
+    \begin{itemize}
+      \item \textbf{updPhone $\langle$nombre$\rangle$ $\langle$nuevo teléfono$\rangle$} Actualiza el número de telefono de un contacto existente. Recordar como se ingresan los teléfonos en \textbf{addContact}
+
+      \item \textbf{updAddress $\langle$nombre$\rangle$ $\langle$nueva dirección$\rangle$} Actualiza la dirección de un contacto existente.
+    \end{itemize}
+
+    \subsection*{Operaciones de busqueda y filtrado}
+    \begin{itemize}
+      \item \textbf{searchContact $\langle$nombre$\rangle$} Busca un contacto por su nombre.
+      \item \textbf{allContacts} Lista todos los contactos.
+      \item \textbf{allReminds} Lista todos los recordatorios.
+      \item \textbf{allMeetings} Lista todas las reuniones.
+      \item \textbf{allDebts} Lista todas las deudas.
+      \item \textbf{allGroceries} Muestra la lista de compras.
+      \item \textbf{interval $\langle$días$\rangle$} Lista todas las reuniones y recordatorios entre la fecha actual y $\langle$días$\rangle$
+      \item \textbf{thisWeek} Lista todas las reuniones y recordatorios para la semana. Equivalente a realizar \texttt{interval 7}.
+      \item \textbf{thisMonth} Idem. \textbf{thisWeek} pero para un mes.
+      \item \textbf{debtsTo $\langle$nombre$\rangle$} Lista todas las deudas de $\langle$nombre$\rangle$.
+      \item \textbf{debtsHigher $\langle$n$\rangle$} Muestra las deudas mayoras a $\langle$n$\rangle$.
+    \end{itemize}
+
+    \section*{Modulos del programa}
+      \subsection*{Types.hs}
+       Aquí se definieron todas las principales estructuras utilizadas, asi como también se redefinieron algunos tipos con la sentencia \texttt{type} para que luego el código sea más fácil de leer.\\
+       Además de los tipos y las estructuras para la agenda, se tiene la estructura del estado que lleva el programa en todo momento. El estado consta de el último archivo cargado con el comando \texttt{:load}
+       y de una instancia de la agenda cargada, si es que hay una. \\ 
+       Para tener la posibilidad de no tener una agenda cargada se definió el siguiente tipo de dato:
+       \begin{verbatim}
+       data LoadSched = Null | LS Schedule
+       \end{verbatim}
+       donde \texttt{Schedule} es la estructura de la agenda definida en el mismo modulo y explicada más arriba.
+
+       \subsection*{AST.hs}
+       En este módulo se encuentra el árbol de sintaxis abstracta de nuestro lenguaje sobre la agenda.
+       Simplemente estan los tipos que representan los comandos y las operaciones explicadas en la sección
+       anterior. Cuando se lee, por ejemplo, la operación \texttt{newSched Juan} el analizador o \textit{parser}
+       devuelve algo de la forma: \begin{verbatim} NewSched Juan :: ScheduleComm \end{verbatim} Idem. con las demás operaciones y comandos, con la excepción de que los comandos están separados en el tipo \textit{InterpreterComm}.
+
+       \subsection*{}
+
+
+
+\end{document}

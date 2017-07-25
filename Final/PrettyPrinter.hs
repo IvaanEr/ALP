@@ -52,8 +52,8 @@ printDateNoHour date = let d = day date
                        in int d <> s <>int m <> s <> int y
 
 printReminder :: Reminder -> Doc
-printReminder (Remind d s) = printDate d <+> text s 
-printReminder (Meeting d s) =printDate d <+> text s
+printReminder (Remind d s)  = text "R" <+> printDate d <+> text s 
+printReminder (Meeting d s) = text "M" <+> printDate d <+> text s
 
 printListReminder :: Reminders -> Doc
 printListReminder xs = printList xs printReminder

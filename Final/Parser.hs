@@ -97,11 +97,11 @@ contactListP :: Parser Contacts
 contactListP = listP contactP
 
 reminderP :: Parser Reminder
-reminderP = try (do --reserved lis "R"
+reminderP = try (do reserved lis "R"
                     d <- dateP
                     description <- str
                     return (Remind d description))
-            <|> (do --reserved lis "M"
+            <|> (do reserved lis "M"
                     d <- dateP
                     description <- str
                     return (Meeting d description))
