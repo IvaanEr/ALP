@@ -5,6 +5,7 @@
 \usepackage{graphicx}
 \usepackage{xcolor,sectsty}
 
+\pagenumbering{roman}
 \definecolor{myred}{RGB}{128,0,32}
 \subsectionfont{\color{myred}}
 \sectionfont{\color{myred}}
@@ -35,15 +36,15 @@
     \subsection*{Estructura de la agenda personal}
     La agenda consiste de:
     \begin{itemize}
-      \item Un dueño: Este es quien creó la agenda y con este nombre se la guardara y se la cargara respectivamente.
+      \item Un dueño: Este es quien creó la agenda y con este nombre se la guardará y se la cargará respectivamente.
       \item Contactos: Una lista de contactos de la forma \texttt{nombre-teléfono-dirección}.\\
       Por ejemplo: Martín 341-1235559 Pellegrini 200. También se pueden tener contactos solo de la forma \texttt{nombre-teléfono}.
       \item Recordatorios: También es una lista que puede tener \texttt{reuniones} y \texttt{recordatorios}.
       \item Deudas: Una lista de deudas de la forma \texttt{nombre-cantidad-razón}
-      \item Compras o cosas para hacer: Por último se tiene una lista simple donde podemos escribir cualquier que se desee recordar.
+      \item Compras o cosas para hacer: Por último se tiene una lista simple donde podemos escribir cualquier cosa que se desee recordar.
     \end{itemize}
 
-  \section*{Guia de usuario}
+  \section*{Guía de usuario}
   \subsection*{Comandos}
     En una primera instancia tenemos los comandos para abrir, guardar, etc. Estos son los siguientes:
     \begin{itemize}
@@ -65,9 +66,12 @@
       \item \textbf{newSched $\langle$nombre$\rangle$} Crea una nueva agenda.
       
       \item \textbf{addContact $\langle$nombre$\rangle$ $\langle$teléfono$\rangle$ $\langle$dirección$\rangle$}
-        Añade un nuevo contacto. Se puede añadir un contacto que tenga solo número de teléfono. Además tener en cuenta que el teléfono debe ser de la forma \texttt{caracteristica-número}.
+        Añade un nuevo contacto. Se puede añadir un contacto que tenga solo número de teléfono. Además tener en cuenta que el teléfono 
+        debe ser de la forma \texttt{característica-número}.
       
-      \item \textbf{addRemind $\langle$[R][M]$\rangle$ $\langle$día-mes-año$\rangle$ $\langle$hora:min$\rangle$ $\langle$descripción$\rangle$} Añade un nuevo recordatorio. Recordar añadir la R (reminder) o la M (meeting) al comienzo para poder diferenciarlos. Tambíen utilizar bien la notación para las fechas, por ejemplo 26-09-2017 o 26/09/2017; al igual que con la hora, utilizar los dos puntos.
+      \item \textbf{addRemind $\langle$[R][M]$\rangle$ $\langle$día-mes-año$\rangle$ $\langle$hora:min$\rangle$ $\langle$descripción$\rangle$}
+      Añade un nuevo recordatorio. Recordar añadir la R (reminder) o la M (meeting) al comienzo para poder diferenciarlos.
+      También utilizar bien la notación para las fechas, por ejemplo 26-09-2017 o 26/09/2017; al igual que con la hora, utilizar los dos puntos.
 
       \item \textbf{addDebt $\langle$nombre$\rangle$ $\langle$\$dinero$\rangle$ $\langle$descripción$\rangle$}
       Añade una nueva deuda.
@@ -77,7 +81,9 @@
     \subsection*{Operaciones de eliminación}
     \begin{itemize}  
       \item \textbf{delContact $\langle$nombre$\rangle$} Elimina el contacto dado.
-      \item \textbf{delRemind $\langle$[R][M]$\rangle$ $\langle$día-mes-año$\rangle$ $\langle$hora:min$\rangle$ $\langle$descripción$\rangle$} Elimina el recordatorio dado. Como se puede tener la misma descripción en varias fechas, o la misma fecha para distintas descripción está operación necesita todo el recordatorio.
+      \item \textbf{delRemind $\langle$[R][M]$\rangle$ $\langle$día-mes-año$\rangle$ $\langle$hora:min$\rangle$ $\langle$descripción$\rangle$} 
+      Elimina el recordatorio dado. Como se puede tener la misma descripción en varias fechas, o la misma fecha para distintas descripción esta 
+      operación necesita todo el recordatorio.
 
       \item \textbf{delDebt $\langle$nombre$\rangle$ $\langle$\$dinero$\rangle$ $\langle$descripción$\rangle$} Elimina la deuda dada. También, como puede haber varias deudas de la misma persona se necesita toda la deuda.
 
@@ -86,7 +92,7 @@
 
     \subsection*{Operaciones de actualización}
     \begin{itemize}
-      \item \textbf{updPhone $\langle$nombre$\rangle$ $\langle$nuevo teléfono$\rangle$} Actualiza el número de telefono de un contacto existente. Recordar como se ingresan los teléfonos en \textbf{addContact}
+      \item \textbf{updPhone $\langle$nombre$\rangle$ $\langle$nuevo teléfono$\rangle$} Actualiza el número de teléfono de un contacto existente. Recordar como se ingresan los teléfonos en \textbf{addContact}
 
       \item \textbf{updAddress $\langle$nombre$\rangle$ $\langle$nueva dirección$\rangle$} Actualiza la dirección de un contacto existente.
     \end{itemize}
@@ -101,30 +107,68 @@
       \item \textbf{allGroceries} Muestra la lista de compras.
       \item \textbf{interval $\langle$días$\rangle$} Lista todas las reuniones y recordatorios entre la fecha actual y $\langle$días$\rangle$
       \item \textbf{thisWeek} Lista todas las reuniones y recordatorios para la semana. Equivalente a realizar \texttt{interval 7}.
-      \item \textbf{thisMonth} Idem. \textbf{thisWeek} pero para un mes.
+      \item \textbf{thisMonth} Ídem. \textbf{thisWeek} pero para un mes.
       \item \textbf{debtsTo $\langle$nombre$\rangle$} Lista todas las deudas de $\langle$nombre$\rangle$.
-      \item \textbf{debtsHigher $\langle$n$\rangle$} Muestra las deudas mayoras a $\langle$n$\rangle$.
+      \item \textbf{debtsHigher $\langle$n$\rangle$} Muestra las deudas mayores a $\langle$n$\rangle$.
     \end{itemize}
 
-    \section*{Modulos del programa}
+    \section*{Módulos del programa}
       \subsection*{Types.hs}
-       Aquí se definieron todas las principales estructuras utilizadas, asi como también se redefinieron algunos tipos con la sentencia \texttt{type} para que luego el código sea más fácil de leer.\\
+       Aquí se definieron todas las principales estructuras utilizadas, así como también se redefinieron algunos tipos con la sentencia \texttt{type} para que luego el código sea más fácil de leer.\\
        Además de los tipos y las estructuras para la agenda, se tiene la estructura del estado que lleva el programa en todo momento. El estado consta de el último archivo cargado con el comando \texttt{:load}
        y de una instancia de la agenda cargada, si es que hay una. \\ 
        Para tener la posibilidad de no tener una agenda cargada se definió el siguiente tipo de dato:
        \begin{verbatim}
        data LoadSched = Null | LS Schedule
        \end{verbatim}
-       donde \texttt{Schedule} es la estructura de la agenda definida en el mismo modulo y explicada más arriba.
+       donde \texttt{Schedule} es la estructura de la agenda definida en el mismo módulo y explicada más arriba.
 
        \subsection*{AST.hs}
        En este módulo se encuentra el árbol de sintaxis abstracta de nuestro lenguaje sobre la agenda.
-       Simplemente estan los tipos que representan los comandos y las operaciones explicadas en la sección
+       Simplemente son los tipos que representan los comandos y las operaciones explicadas en la sección
        anterior. Cuando se lee, por ejemplo, la operación \texttt{newSched Juan} el analizador o \textit{parser}
-       devuelve algo de la forma: \begin{verbatim} NewSched Juan :: ScheduleComm \end{verbatim} Idem. con las demás operaciones y comandos, con la excepción de que los comandos están separados en el tipo \textit{InterpreterComm}.
+       devuelve algo de la forma: \begin{verbatim} NewSched Juan :: ScheduleComm \end{verbatim} Ídem. con las demás operaciones y comandos, con la excepción de que los comandos están separados en el tipo \textit{InterpreterComm}.
 
-       \subsection*{}
+       \subsection*{Parser.hs y ParserComm.hs}
+       Los analizadores o \textit{parsers} son los encargados de tomar los comandos proporcionados por el usuario y devolverle al programa algo con lo que pueda trabajar. También se utilizan para interpretar los archivos de las agendas. En este caso tenemos dos tipos de \textit{parsers}, en \texttt{Parser.hs} están las funciones encargadas de analizar las estructuras de la agenda, por ejemplo un recordatorio de la forma \texttt{R 24/12/2017 00:00 Navidad} es analizado por \texttt{reminderP} y le devuelve al programa algo de la forma: \begin{verbatim} Remind (DateTime 2017 12 24 00 00) "Navidad" :: Reminder \end{verbatim} Por otro lado, se tienen los analizadores de las operaciones que utilizan a su vez los analizadores de estructuras de agenda, estos se encuentran en \texttt{ParserComm.hs}.
 
+       \subsection*{PrettyPrinter.hs}
+       Este módulo se puede pensar como el caso inverso a el analizador. Se útiliza para poder mostrarle al usuario de forma mas legible 
+       las consultas que realiza sobre la agenda.
+       La idea es que estas funciones esten en sintonia con los \textit{parsers} de las estructuras ya que los archivos son guardados 
+       utilizando funciones de \texttt{PrettyPrinter}. Si en los archivos se utilizara una sintaxis distinta de la que utiliza 
+       el usuario para las estructuras deberíamos tener otro analizador para los archivos. En este caso no fue necesario al utilizar en 
+       \texttt{PrettyPrinter} la misma sintaxis que en los \textit{parsers}. 
+
+       \subsection*{Commands.hs}
+       Aquí es donde tu deseos se hacen realidad! Este módulo se encarga de realizar las operaciones y comandos que el usuario ingresa desde mostrar la ayuda y cargar una agenda hasta agregar un nuevo contacto a la misma.\\
+       Primero un comando es analizado por la función\\
+       \texttt{interpreterCommand :: String -> IO Commands}\\
+       que chequea si es un comando correcto y devuelve algo de la forma \texttt{(IComm c)} o \texttt{(SComm
+       s)} dependiendo si es un comando o una operación respectivamente.\\
+       Luego, ese comando es analizado por la función\\
+       \texttt{handleCommand :: State -> Commands -> IO (Maybe State)}\\
+        que deriva su trabajo dependiendo si es un \texttt{IComm} o \texttt{SComm}. Para esto
+        tenemos las funciones
+        \\ \texttt{handleInterpreter :: State -> InterpreterComm -> IO (Maybe State)} y \\
+        \texttt{handleSchedule ::  State -> ScheduleComm -> IO (Maybe State)} respectivamente que realizan efectivamente la acción solicitada.
+
+        \subsection*{Operations.hs}
+        Módulo donde se encuentran todas las operaciones sobre la agenda, además de funciones auxiliares para llevar a cabo las mismas. Las utiliza \texttt{Commands.hs} para hacer cambios sobre la estructura.
+
+        \subsection*{Main.hs}
+        Donde todo comienza! Aquí es donde se maneja la interfaz de usuario y se llama a \texttt{interpretCommand} y \texttt{handleCommand} cuando el usuario ingresa un comando. \\
+        Una observación interesante es que en \texttt{Commands.hs} la única operación que devuelve \textit{Nothing} es \texttt{:quit} y es cuando el búcle del intérprete termina.
+
+    \section*{Posibles expansiones}
+      Algunas funciones que se podrían agregar: %para hacerlo un sistema más adaptable al usuario son:
+
+      \begin{itemize}
+        \item Interfaz de usuario. Para un uso más cómodo para alguien que no está acostumbrado al uso de una consola.
+        \item Una forma de poder eliminar los recordatorios, reuniones y deudas sin tener que repetirla. Una posible implementación sería, primero enumerar los datos cuando se muestran luego de alguna operación de filtrado. Luego, que el usuario pueda seleccionar de acuerdo a la numeración algún item y que pueda eliminar la selección de forma sencilla como por ejemplo \texttt{delRemind selection} sabiendo que se eliminará la última selección.
+        \item Encriptación de los archivos guardados. Cualquiera que abra en modo lectura un archivo de agenda podrá saber la programación de tu semana y quizás no sea buena idea.
+        \item Tener separadas las deudas que en dos tipos, las que son hacia el dueño de la agenda y las que el dueño debe, algo similar a lo que se hizo con los recordatorios y reuniones.
+      \end{itemize}
 
 
 \end{document}
