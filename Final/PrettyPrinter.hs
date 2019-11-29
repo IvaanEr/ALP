@@ -3,7 +3,7 @@ module PrettyPrinter where
 import Text.PrettyPrint.HughesPJ
 -- import Text.PrettyPrint.Leijen (line)
 import Data.Dates
-
+import Prelude hiding ((<>))
 import Types
 
 printPhone :: PhoneNum -> Doc
